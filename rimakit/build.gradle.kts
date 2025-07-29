@@ -1,13 +1,16 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.gradle.api.publish.PublishingExtension
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.vanniktech.maven.publish)
 }
+
 
 kotlin {
     androidTarget {
@@ -16,7 +19,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -27,7 +30,7 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -40,11 +43,6 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
         }
     }
 }
@@ -54,11 +52,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.riadmahi.rimakit"
         minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
     }
     packaging {
         resources {
@@ -77,6 +71,50 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.testExt.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
     debugImplementation(compose.uiTooling)
 }
 
+/**
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
+
+    coordinates("com.riadmahi", "rimakit")
+
+    pom {
+        name.set("RimaKit")
+        description.set("Design better. Build faster.")
+        inceptionYear.set("2024")
+        url.set("https://github.com/riadmahi/RimaKit")
+
+        licenses {
+            license {
+                name.set("MIT License")
+                url.set("https://opensource.org/licenses/MIT")
+                distribution.set("repo")
+            }
+        }
+
+        developers {
+            developer {
+                id.set("riadmahi")
+                name.set("Riad Mahi")
+                email.set("contact@riadmahi.com")
+                url.set("https://github.com/riadmahi")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/riadmahi/RimaKit")
+            connection.set("scm:git:git://github.com/riadmahi/RimaKit.git")
+            developerConnection.set("scm:git:ssh://git@github.com/riadmahi/RimaKit.git")
+        }
+    }
+}
+**/

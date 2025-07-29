@@ -15,9 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import rimakit.example.composeapp.generated.resources.Res
+import rimakit.example.composeapp.generated.resources.compose_multiplatform
 
-import rimakit.composeapp.generated.resources.Res
-import rimakit.composeapp.generated.resources.compose_multiplatform
 
 @Composable
 @Preview

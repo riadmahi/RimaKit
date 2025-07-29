@@ -1,5 +1,4 @@
 rootProject.name = "RimaKit"
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
@@ -28,4 +27,6 @@ dependencyResolutionManagement {
     }
 }
 
-include(":composeApp")
+
+include(":example:composeApp")
+include(":rimakit")
