@@ -1,5 +1,12 @@
 package com.riadmahi.rimakit
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import com.riadmahi.rimakit.components.expandedtabs.ExpandedTabs
+import com.riadmahi.rimakit.components.expandedtabs.TabItem
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,6 +35,9 @@ fun App() {
                 composable("minimal_card") {
                     MinimalCardDemo(onBack = { navController.popBackStack() })
                 }
+                composable("expanded_tabs") {
+                    ExpandedTabsDemo(onBack = { navController.popBackStack() })
+                }
             }
         }
     }
@@ -50,8 +60,9 @@ fun ComponentMenu(onSelect: (String) -> Unit) {
         Button(onClick = { onSelect("minimal_card") }) {
             Text("Minimal Card Demo")
         }
-
-        // Future buttons for other components
+        Button(onClick = { onSelect("expanded_tabs") }) {
+            Text("Expanded Tabs Demo")
+        }
     }
 }
 
@@ -100,5 +111,37 @@ fun MinimalCardDemo(onBack: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+
+@Composable
+fun ExpandedTabsDemo(onBack: () -> Unit) {
+    val items = listOf(
+        TabItem.Tab("Home", Icons.Default.Home),
+        TabItem.Separator,
+        TabItem.Tab("Profile", Icons.Default.Person),
+        TabItem.Separator,
+        TabItem.Tab("Settings", Icons.Default.Settings)
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeContentPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Button(onClick = onBack) {
+            Text("← Back")
+        }
+
+        ExpandedTabs(
+            tabs = items,
+            modifier = Modifier.padding(16.dp),
+            onChange = { index ->
+                println("Selected: $index")
+            }
+        )
     }
 }

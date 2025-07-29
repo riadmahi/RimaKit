@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.navigation)
             implementation(project(":rimakit"))
+            implementation(libs.compose.material.icons.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
