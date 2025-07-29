@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
+import com.riadmahi.rimakit.components.animatednumber.AnimatedNumberRandom
 import com.riadmahi.rimakit.components.minimalcard.MinimalCard
 import com.riadmahi.rimakit.components.minimalcard.MinimalCardData
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -37,6 +38,9 @@ fun App() {
                 }
                 composable("expanded_tabs") {
                     ExpandedTabsDemo(onBack = { navController.popBackStack() })
+                }
+                composable("animated_number") {
+                    AnimatedNumberRandomDemo(onBack = { navController.popBackStack() })
                 }
             }
         }
@@ -62,6 +66,9 @@ fun ComponentMenu(onSelect: (String) -> Unit) {
         }
         Button(onClick = { onSelect("expanded_tabs") }) {
             Text("Expanded Tabs Demo")
+        }
+        Button(onClick = { onSelect("animated_number") }) {
+            Text("Animated Number Demo")
         }
     }
 }
@@ -142,6 +149,36 @@ fun ExpandedTabsDemo(onBack: () -> Unit) {
             onChange = { index ->
                 println("Selected: $index")
             }
+        )
+    }
+}
+
+@Composable
+fun AnimatedNumberRandomDemo(onBack: () -> Unit) {
+    val value = remember { mutableStateOf(1234.56) }
+    val diff = remember { mutableStateOf(4.5) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeContentPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Button(onClick = onBack) {
+            Text("← Back")
+        }
+
+        Button(onClick = {
+            value.value = (1000..5000).random().toDouble()
+            diff.value = (-10..10).random().toDouble()
+        }) {
+            Text("Randomize")
+        }
+
+        AnimatedNumberRandom(
+            value = value.value,
+            diff = diff.value
         )
     }
 }

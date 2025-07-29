@@ -42,6 +42,8 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.animation)
+            implementation(compose.materialIconsExtended)
             implementation(libs.coil.compose)
             implementation(libs.coil.compose.core)
             implementation(libs.coil.network.ktor2)
@@ -50,6 +52,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
