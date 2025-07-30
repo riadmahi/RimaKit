@@ -1,5 +1,6 @@
 package com.riadmahi.rimakit
 
+import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -13,12 +14,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
 import com.riadmahi.rimakit.components.animatednumber.AnimatedNumberRandom
+import com.riadmahi.rimakit.components.expandedtabs.TabIcon
 import com.riadmahi.rimakit.components.minimalcard.MinimalCard
 import com.riadmahi.rimakit.components.minimalcard.MinimalCardData
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import rimakit.example.composeapp.generated.resources.Res
+import rimakit.example.composeapp.generated.resources.ic_brand
+import rimakit.example.composeapp.generated.resources.ic_home
+import rimakit.example.composeapp.generated.resources.ic_notification
+import rimakit.example.composeapp.generated.resources.ic_search
 
 @Composable
 @Preview
@@ -58,8 +67,12 @@ fun ComponentMenu(onSelect: (String) -> Unit) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("RimaKit Demo", style = MaterialTheme.typography.headlineMedium)
-        HorizontalDivider(color = Color.LightGray, thickness = 1.dp)
+        Image(
+            painter = painterResource(Res.drawable.ic_brand),
+            contentDescription = null,
+            modifier = Modifier.height(80.dp)
+        )
+        HorizontalDivider(color =  Color(0xFFE6E6E7), thickness = 1.dp)
 
         Button(onClick = { onSelect("minimal_card") }) {
             Text("Minimal Card Demo")
@@ -125,11 +138,10 @@ fun MinimalCardDemo(onBack: () -> Unit) {
 @Composable
 fun ExpandedTabsDemo(onBack: () -> Unit) {
     val items = listOf(
-        TabItem.Tab("Home", Icons.Default.Home),
+        TabItem("Home", Res.drawable.ic_home),
+        TabItem("Search", Res.drawable.ic_search),
         TabItem.Separator,
-        TabItem.Tab("Profile", Icons.Default.Person),
-        TabItem.Separator,
-        TabItem.Tab("Settings", Icons.Default.Settings)
+        TabItem("Notifications", Res.drawable.ic_notification)
     )
 
     Column(
@@ -148,7 +160,12 @@ fun ExpandedTabsDemo(onBack: () -> Unit) {
             modifier = Modifier.padding(16.dp),
             onChange = { index ->
                 println("Selected: $index")
-            }
+            },
+            activeColor = Color.Black,
+            backgroundColor = Color.White,
+            borderColor = Color(0xFFE6E6E7),
+            selectedBackgroundColor = Color(0xFFF4F6F8),
+            selectedTabIndex = 0
         )
     }
 }
