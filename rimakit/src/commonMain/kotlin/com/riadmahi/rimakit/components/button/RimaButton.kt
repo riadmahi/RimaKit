@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -39,7 +40,8 @@ fun RimaButton(
     contentColor: Color = Color.White,
     cornerRadius: Dp = 14.dp,
     textStyle: TextStyle = brSonomaTypography().titleSmall,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    borderColor: Color = Color.Transparent
 ) {
     var pressed by remember { mutableStateOf(false) }
 
@@ -72,6 +74,7 @@ fun RimaButton(
             .alpha(alpha)
             .clip(RoundedCornerShape(animatedCornerRadius))
             .background(backgroundColor)
+            .border(1.dp, borderColor, RoundedCornerShape(animatedCornerRadius))
             .pointerInput(isLoading) {
                 detectTapGestures(
                     onPress = {
