@@ -33,11 +33,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.riadmahi.rimakit.components.animatednumber.AnimatedNumberRandom
+import com.riadmahi.rimakit.components.button.RimaButton
 import com.riadmahi.rimakit.components.expandedtabs.ExpandedTabs
 import com.riadmahi.rimakit.components.expandedtabs.TabItem
 import com.riadmahi.rimakit.components.minimalcard.MinimalCard
@@ -76,6 +79,10 @@ fun App() {
                 composable("animated_number") {
                     AnimatedNumberRandomDemo(onBack = { navController.popBackStack() })
                 }
+
+                composable("rima_button") {
+                    RimaButtonDemo(onBack = { navController.popBackStack() })
+                }
             }
         }
     }
@@ -87,7 +94,8 @@ fun ComponentMenu(onSelect: (String) -> Unit) {
     val items = listOf(
         "Minimal Card Demo" to "minimal_card",
         "Expanded Tabs Demo" to "expanded_tabs",
-        "Animated Number Demo" to "animated_number"
+        "Animated Number Demo" to "animated_number",
+        "Rima Button Demo" to "rima_button"
     )
 
     var selected by remember { mutableStateOf<String?>(null) }
@@ -136,12 +144,20 @@ fun ComponentMenu(onSelect: (String) -> Unit) {
                         .padding(vertical = 8.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(
-                        text = label,
-                        style = typography.titleMedium,
-                        color = Color.Black,
-                        modifier = Modifier.alpha(textAlpha)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = label,
+                            style = typography.titleMedium,
+                            color = Color.Black,
+                            modifier = Modifier.alpha(textAlpha)
+                        )
+
+                        BetaBadge()
+                    }
 
                     Box(
                         Modifier
@@ -264,6 +280,60 @@ fun AnimatedNumberRandomDemo(onBack: () -> Unit) {
     }
 }
 
+
+@Composable
+fun RimaButtonDemo(onBack: () -> Unit) {
+    var isLoading by remember { mutableStateOf(false) }
+
+    // Ajout de l'effet une fois le bouton cliqué
+    LaunchedEffect(isLoading) {
+        if (isLoading) {
+            delay(1500)
+            isLoading = false
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .safeContentPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        RimaTopBar(title = "Rima Button Demo", onBack = onBack)
+
+        RimaButton(
+            text =  "Click Me",
+            isLoading = isLoading,
+            onClick = {
+                isLoading = true
+            }
+        )
+    }
+}
+
+@Composable
+fun BetaBadge(
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = Color(0xFFE5DDF4),
+    textColor: Color = Color(0xFFA67BF1)
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(100))
+            .background(backgroundColor)
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "BETA",
+            color = textColor,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 11.sp
+        )
+    }
+}
 @Composable
 fun RimaTopBar(
     title: String,
