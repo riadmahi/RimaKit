@@ -45,6 +45,7 @@ import com.riadmahi.rimakit.components.expandedtabs.ExpandedTabs
 import com.riadmahi.rimakit.components.expandedtabs.TabItem
 import com.riadmahi.rimakit.components.minimalcard.MinimalCard
 import com.riadmahi.rimakit.components.minimalcard.MinimalCardData
+import com.riadmahi.rimakit.components.toggle.RimaToggle
 import com.riadmahi.rimakit.theme.RimaKitTheme
 import com.riadmahi.rimakit.theme.brSonomaTypography
 import kotlinx.coroutines.delay
@@ -83,6 +84,10 @@ fun App() {
                 composable("rima_button") {
                     RimaButtonDemo(onBack = { navController.popBackStack() })
                 }
+
+                composable("rima_toggle") {
+                    RimaToggleDemo(onBack = { navController.popBackStack() })
+                }
             }
         }
     }
@@ -95,7 +100,8 @@ fun ComponentMenu(onSelect: (String) -> Unit) {
         "Minimal Card Demo" to "minimal_card",
         "Expanded Tabs Demo" to "expanded_tabs",
         "Animated Number Demo" to "animated_number",
-        "Rima Button Demo" to "rima_button"
+        "Rima Button Demo" to "rima_button",
+        "Rima Toggle Demo" to "rima_toggle"
     )
 
     var selected by remember { mutableStateOf<String?>(null) }
@@ -370,6 +376,28 @@ fun RimaTopBar(
             text = title,
             style = typography.titleMedium,
             color = Color.Black
+        )
+    }
+}
+
+@Composable
+fun RimaToggleDemo(onBack: () -> Unit) {
+    var isChecked by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .safeContentPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        RimaTopBar(title = "Rima Toggle Demo", onBack = onBack)
+
+
+        RimaToggle(
+            checked = isChecked,
+            onCheckedChange = { isChecked = it }
         )
     }
 }
