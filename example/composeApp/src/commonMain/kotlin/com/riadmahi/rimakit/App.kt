@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -29,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -44,6 +47,7 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import rimakit.example.composeapp.generated.resources.Res
+import rimakit.example.composeapp.generated.resources.ic_arrow_left
 import rimakit.example.composeapp.generated.resources.ic_brand
 import rimakit.example.composeapp.generated.resources.ic_home
 import rimakit.example.composeapp.generated.resources.ic_notification
@@ -172,12 +176,11 @@ fun MinimalCardDemo(onBack: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .safeContentPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = onBack) {
-            Text("← Back")
-        }
+        RimaTopBar(title = "Minimal Card Demo", onBack = onBack)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -210,13 +213,12 @@ fun ExpandedTabsDemo(onBack: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .safeContentPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Button(onClick = onBack) {
-            Text("← Back")
-        }
+        RimaTopBar(title = "Expanded Tabs Demo", onBack = onBack)
 
         ExpandedTabs(
             tabs = items,
@@ -241,14 +243,12 @@ fun AnimatedNumberRandomDemo(onBack: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .safeContentPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Button(onClick = onBack) {
-            Text("← Back")
-        }
-
+        RimaTopBar(title = "Animated Number Random Demo", onBack = onBack)
         Button(onClick = {
             value.value = (1000..5000).random().toDouble()
             diff.value = (-10..10).random().toDouble()
@@ -259,6 +259,46 @@ fun AnimatedNumberRandomDemo(onBack: () -> Unit) {
         AnimatedNumberRandom(
             value = value.value,
             diff = diff.value
+        )
+    }
+}
+
+@Composable
+fun RimaTopBar(
+    title: String,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val typography = brSonomaTypography()
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onBack() }
+                .padding(8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = "Back",
+                modifier = Modifier
+                    .height(20.dp)
+                    .width(20.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Text(
+            text = title,
+            style = typography.titleMedium,
+            color = Color.Black
         )
     }
 }
