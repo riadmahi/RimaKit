@@ -42,6 +42,7 @@ import com.riadmahi.rimakit.components.expandedtabs.ExpandedTabs
 import com.riadmahi.rimakit.components.expandedtabs.TabItem
 import com.riadmahi.rimakit.components.minimalcard.MinimalCard
 import com.riadmahi.rimakit.components.minimalcard.MinimalCardData
+import com.riadmahi.rimakit.theme.RimaKitTheme
 import com.riadmahi.rimakit.theme.brSonomaTypography
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
@@ -56,7 +57,7 @@ import rimakit.example.composeapp.generated.resources.ic_search
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    RimaKitTheme {
         val navController = rememberNavController()
         Surface(
             modifier = Modifier.fillMaxSize(),
