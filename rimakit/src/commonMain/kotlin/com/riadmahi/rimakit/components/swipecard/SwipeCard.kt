@@ -1,225 +1,178 @@
 package com.riadmahi.rimakit.components.swipecard
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil3.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.abs
-import kotlin.math.roundToInt
 import kotlin.math.sign
 
 @Composable
 fun SwipeCard(
     images: List<String>,
     modifier: Modifier = Modifier,
-    maxVisibleCards: Int = 3,
     cardSize: DpOffset = DpOffset(300.dp, 450.dp),
-    loop: Boolean = false,
-    showSwipeButtons: Boolean = true,
+    autoplayDelayMillis: Long = 2000L,
+    loop: Boolean = true,
     onSwipe: (direction: String, swipedUrl: String) -> Unit = { _, _ -> }
 ) {
-    var cards by remember { mutableStateOf(images) }
-    var dragOffsetX by remember { mutableStateOf(0f) }
-    var isSwipingOut by remember { mutableStateOf(0) } // -1 left, 1 right, 0 none
+    var index by remember { mutableStateOf(0) }
+    val current = images.getOrNull(index % images.size)
+    val next = images.getOrNull((index + 1) % images.size)
 
-    val swipeThreshold = cardSize.x.value * 0.3f
+    val density = LocalDensity.current.density
+    val thresholdX = 120f
+    val thresholdY = 120f
 
-    // Animate top card offsetX when swiping out
-    val animatedOffsetX by animateFloatAsState(
-        targetValue = when (isSwipingOut) {
-            1 -> 600f
-            -1 -> -600f
-            else -> dragOffsetX
-        }
-    )
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+    val animatedOffsetX = remember { Animatable(0f) }
+    val animatedOffsetY = remember { Animatable(0f) }
+    var isAnimating by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
-    // Animate top card alpha and scale when swiping out
-    val topCardAlpha by animateFloatAsState(
-        targetValue = if (isSwipingOut != 0) 1f - (abs(animatedOffsetX) / 600f).coerceIn(0f, 1f) else 1f
-    )
-    val topCardScale by animateFloatAsState(
-        targetValue = if (isSwipingOut != 0) 1f - (abs(animatedOffsetX) / 3000f).coerceIn(0f, 0.1f) else 1f
-    )
+    var nextAlpha by remember { mutableStateOf(0.8f) }
+    var nextScale by remember { mutableStateOf(0.95f) }
 
-    // When swipe out animation is finished, remove the top card and reset states
-    LaunchedEffect(isSwipingOut, animatedOffsetX) {
-        if (isSwipingOut != 0 && abs(animatedOffsetX) >= 600f) {
-            if (cards.isNotEmpty()) {
-                val swiped = cards.first()
-                onSwipe(if (isSwipingOut == 1) "right" else "left", swiped)
-                cards = cards.drop(1)
-                if (loop) cards = cards + swiped
-            }
-            dragOffsetX = 0f
-            isSwipingOut = 0
+    suspend fun resetPosition() {
+        animatedOffsetX.animateTo(0f, animationSpec = tween(300))
+        animatedOffsetY.animateTo(0f, animationSpec = tween(300))
+        offsetX = 0f
+        offsetY = 0f
+    }
+
+    suspend fun swipeAway(directionX: Float) {
+        animatedOffsetX.animateTo(directionX * 600f, animationSpec = tween(300))
+        animatedOffsetY.animateTo(0f, animationSpec = tween(300))
+        delay(50)
+        index = if (loop) (index + 1) % images.size else minOf(index + 1, images.size - 1)
+        animatedOffsetX.snapTo(0f)
+        animatedOffsetY.snapTo(0f)
+        offsetX = 0f
+        offsetY = 0f
+        isAnimating = false
+        current?.let { onSwipe(if (directionX > 0) "right" else "left", it) }
+    }
+
+    LaunchedEffect(offsetX, offsetY) {
+        if (!isAnimating) {
+            animatedOffsetX.snapTo(offsetX)
+            animatedOffsetY.snapTo(offsetY)
         }
     }
 
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    LaunchedEffect(index) {
+        nextAlpha = 0.8f
+        nextScale = 0.95f
+        delay(100)
+        nextAlpha = 1f
+        nextScale = 1f
+
+        delay(autoplayDelayMillis)
+        if (!isAnimating) {
+            isAnimating = true
+            coroutineScope.launch { swipeAway(if ((index % 2 == 0)) 1f else -1f) }
+        }
+    }
+
+    Box(
+        modifier = modifier.size(cardSize.x, cardSize.y),
+        contentAlignment = Alignment.Center
     ) {
-        val visibleCards = cards.take(maxVisibleCards)
-
-        val underCards = visibleCards.dropLast(1)
-        val topCardUrl = visibleCards.lastOrNull()
-
-        Box(
-            modifier = Modifier.size(cardSize.x, cardSize.y),
-            contentAlignment = Alignment.Center
-        ) {
-            // Compose underCards from bottom (index 0) to top (index N-2)
-            underCards.forEachIndexed { index, url ->
-                // Under cards react to dragOffsetX for scale, alpha, yOffset
-                val fraction = 1f - (index * 0.07f)
-                val baseScale = 0.85f + (index * 0.07f)
-                val baseAlpha = 0.7f - (index * 0.15f)
-                val baseYOffset = (index * 20).dp
-
-                // Calculate animated values based on dragOffsetX
-                val dragFraction = (dragOffsetX / cardSize.x.value).coerceIn(-1f, 1f)
-                val scaleTarget = baseScale + (0.05f * (1 - index) * abs(dragFraction))
-                val alphaTarget = baseAlpha + (0.1f * (1 - index) * abs(dragFraction))
-                val yOffsetTarget = baseYOffset - animateDpAsState(targetValue = (10.dp * abs(dragFraction) * (1 - index))).value
-
-                val scale by animateFloatAsState(targetValue = scaleTarget.coerceIn(0.85f, 1f))
-                val alpha by animateFloatAsState(targetValue = alphaTarget.coerceIn(0.5f, 1f))
-
-                Box(
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
-                            shadowElevation = ((maxVisibleCards - index) * 6).dp.value
-                            shape = RoundedCornerShape(28.dp)
-                            clip = true
-                        }
-                        .offset { IntOffset(0, yOffsetTarget.roundToPx()) }
-                        .size(cardSize.x, cardSize.y)
-                        .background(Color.Gray)
-                        .zIndex(index.toFloat()),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(url),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-
-            if (topCardUrl != null) {
-                // Top card - swipable
-                Box(
-                    modifier = Modifier
-                        .graphicsLayer {
-                            translationX = animatedOffsetX
-                            scaleX = topCardScale
-                            scaleY = topCardScale
-                            alpha = topCardAlpha
-                            rotationZ = (animatedOffsetX / cardSize.x.value) * 12f
-                            shadowElevation = 24f
-                            shape = RoundedCornerShape(28.dp)
-                            clip = true
-                        }
-                        .size(cardSize.x, cardSize.y)
-                        .background(Color.Gray)
-                        .pointerInput(cards) {
-                            detectDragGestures(
-                                onDragEnd = {
-                                    if (abs(dragOffsetX) > swipeThreshold) {
-                                        isSwipingOut = dragOffsetX.sign.toInt()
-                                    } else {
-                                        dragOffsetX = 0f
-                                    }
-                                },
-                                onDragCancel = {
-                                    dragOffsetX = 0f
-                                },
-                                onDrag = { _, dragAmount ->
-                                    dragOffsetX += dragAmount.x
-                                }
-                            )
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(topCardUrl),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+        next?.let {
+            Box(
+                modifier = Modifier
+                    .graphicsLayer {
+                        scaleX = nextScale
+                        scaleY = nextScale
+                        alpha = nextAlpha
+                        shadowElevation = 4f
+                        shape = RoundedCornerShape(24.dp)
+                        clip = true
+                    }
+                    .zIndex(0f)
+                    .size(cardSize.x, cardSize.y),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = it),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
 
-        if (showSwipeButtons && cards.isNotEmpty()) {
-            Row(
+        current?.let {
+            val rotationY = (animatedOffsetX.value / 300f).coerceIn(-1f, 1f) * 15f
+            val rotationX = -(animatedOffsetY.value / 300f).coerceIn(-1f, 1f) * 15f
+            val elevation = 16f + abs(animatedOffsetX.value + animatedOffsetY.value) / 10f
+            val alpha = 1f - (abs(animatedOffsetX.value) / 600f).coerceIn(0f, 1f)
+            val scale = 1f - (abs(animatedOffsetX.value) / 3000f).coerceIn(0f, 0.1f)
+
+            Box(
                 modifier = Modifier
-                    .padding(top = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .graphicsLayer {
+                        translationX = animatedOffsetX.value
+                        translationY = animatedOffsetY.value
+                        this.rotationY = rotationY
+                        this.rotationX = rotationX
+                        this.alpha = alpha
+                        scaleX = scale
+                        scaleY = scale
+                        cameraDistance = 16 * density
+                        shadowElevation = elevation
+                        shape = RoundedCornerShape(24.dp)
+                        clip = true
+                    }
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragEnd = {
+                                if (!isAnimating) {
+                                    if (abs(offsetX) > thresholdX || abs(offsetY) > thresholdY) {
+                                        isAnimating = true
+                                        coroutineScope.launch {
+                                            swipeAway(offsetX.sign.takeIf { it != 0f } ?: 1f)
+                                        }
+                                    } else {
+                                        coroutineScope.launch { resetPosition() }
+                                    }
+                                }
+                            },
+                            onDrag = { _, dragAmount ->
+                                offsetX += dragAmount.x
+                                offsetY += dragAmount.y
+                            }
+                        )
+                    }
+                    .zIndex(1f)
+                    .size(cardSize.x, cardSize.y),
+                contentAlignment = Alignment.Center
             ) {
-                Button(
-                    onClick = {
-                        if (cards.isNotEmpty() && isSwipingOut == 0) {
-                            isSwipingOut = -1
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
-                    modifier = Modifier.width(120.dp)
-                ) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Swipe Left")
-                }
-                Button(
-                    onClick = {
-                        if (cards.isNotEmpty() && isSwipingOut == 0) {
-                            isSwipingOut = 1
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                    modifier = Modifier.width(120.dp)
-                ) {
-                    Icon(Icons.Default.ArrowForward, contentDescription = "Swipe Right")
-                }
+                Image(
+                    painter = rememberAsyncImagePainter(model = it),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }
