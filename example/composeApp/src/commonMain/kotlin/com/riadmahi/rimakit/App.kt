@@ -45,6 +45,7 @@ import com.riadmahi.rimakit.components.expandedtabs.ExpandedTabs
 import com.riadmahi.rimakit.components.expandedtabs.TabItem
 import com.riadmahi.rimakit.components.minimalcard.MinimalCard
 import com.riadmahi.rimakit.components.minimalcard.MinimalCardData
+import com.riadmahi.rimakit.components.swipecard.SwipeCard
 import com.riadmahi.rimakit.components.toggle.RimaToggle
 import com.riadmahi.rimakit.theme.RimaKitTheme
 import com.riadmahi.rimakit.theme.brSonomaTypography
@@ -88,6 +89,10 @@ fun App() {
                 composable("rima_toggle") {
                     RimaToggleDemo(onBack = { navController.popBackStack() })
                 }
+
+                composable("swipe_card") {
+                    SwipeCardDemo(onBack = { navController.popBackStack() })
+                }
             }
         }
     }
@@ -101,7 +106,8 @@ fun ComponentMenu(onSelect: (String) -> Unit) {
         "Expanded Tabs Demo" to "expanded_tabs",
         "Animated Number Demo" to "animated_number",
         "Rima Button Demo" to "rima_button",
-        "Rima Toggle Demo" to "rima_toggle"
+        "Rima Toggle Demo" to "rima_toggle",
+        "Swipe Card Demo" to "swipe_card",
     )
 
     var selected by remember { mutableStateOf<String?>(null) }
@@ -398,6 +404,35 @@ fun RimaToggleDemo(onBack: () -> Unit) {
         RimaToggle(
             checked = isChecked,
             onCheckedChange = { isChecked = it }
+        )
+    }
+}
+
+@Composable
+fun SwipeCardDemo(onBack: () -> Unit) {
+    val imageUrls = listOf(
+        "https://images.unsplash.com/photo-1650229785916-2cbfe89c72c8?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1661623358405-3f5c3f974a02?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1693235760563-96285d5e4b63?q=80&w=927&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1728887823143-d92d2ebbb53a?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1751093383900-dbf2a79169f8?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .safeContentPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        RimaTopBar(title = "Swipe Card Demo", onBack = onBack)
+
+        SwipeCard(
+            images = imageUrls,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         )
     }
 }
