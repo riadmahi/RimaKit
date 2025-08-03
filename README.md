@@ -8,13 +8,12 @@ It includes handcrafted UI components designed for delightful cross-platform exp
 
 ## ✨ Features
 
-- 🃏 Swipeable cards with smooth animations
-- 🔢 Animated number transitions
-- 🧲 Custom tab systems with icons
-- 🎛️ Toggle switches with personality
-- 🎨 Clean design, fully composable and customizable
+- Swipeable cards with smooth animations
+- Animated number transitions
+- Custom tab systems with icons
+- Toggle switches with personality
+- Clean design, fully composable and customizable
 
----
 
 ## 📦 Installation
 
@@ -23,11 +22,10 @@ Make sure your project is set up for Compose Multiplatform (Android, iOS, Deskto
 > Gradle/TOML integration coming soon.  
 > In the meantime, copy components directly into your shared `commonMain` module.
 
----
 
 ## 📚 Components
 
-### 🔘 RimaToggle
+### RimaToggle
 
 A sleek, animated toggle switch with Compose beauty.  
 Customize colors, shapes, and transitions.
@@ -39,9 +37,8 @@ RimaToggle(
 )
 ```
 
----
 
-### 🃏 SwipeCard
+### SwipeCard
 
 A card deck UI with smooth swipe gestures, perfect for Tinder-like interfaces.
 
@@ -53,9 +50,7 @@ SwipeCard(
 )
 ```
 
----
-
-### ❤️ TinderSwipeCard
+### TinderSwipeCard
 
 An enhanced version of `SwipeCard`, including pre-built stack layout and direction tracking.
 
@@ -66,9 +61,7 @@ TinderSwipeCard(
 )
 ```
 
----
-
-### 🧾 MinimalCard + MinimalCardData
+### MinimalCard + MinimalCardData
 
 A sample minimalistic card UI for quick integration and testing.
 
@@ -78,7 +71,7 @@ MinimalCard(data = MinimalCardData(title = "Hello", subtitle = "World"))
 
 ---
 
-### 📂 ExpandedTabs + TabItem + TabIcon
+### ExpandedTabs + TabItem + TabIcon
 
 A beautiful, animated tab system with custom icons and labels.
 
@@ -93,9 +86,7 @@ ExpandedTabs(
 )
 ```
 
----
-
-### 🎯 RimaButton
+### RimaButton
 
 A minimal button with consistent styling and animations.
 
@@ -106,9 +97,7 @@ RimaButton(
 )
 ```
 
----
-
-### 🔢 AnimatedNumberRandom
+### AnimatedNumberRandom
 
 A fun animated number that updates randomly with smooth transitions.
 
@@ -119,32 +108,25 @@ AnimatedNumberRandom(
 )
 ```
 
----
-
 ## 🚧 Roadmap
 
 - [ ] Add dark mode support
 - [ ] Add more layout and animation utilities
 
----
 
 ## 💡 Why RimaKit?
 
 RimaKit was born from a desire to make Compose Multiplatform apps not just functional, but beautiful.  
 It’s inspired by premium design systems, iOS fluidity, and developer ergonomics.
 
----
-
 ## 🤝 Contributing
 
 Pull requests are welcome! If you have a component or idea to add, feel free to contribute.
 
----
 
 ## 📄 License
 
 MIT © [Riad Mahi](https://www.linkedin.com/in/riadmahi)
 
----
 
 ## 🏁 Let’s build better UIs, together.
