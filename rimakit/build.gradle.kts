@@ -93,7 +93,7 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
-/**
+
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
@@ -130,4 +130,4 @@ mavenPublishing {
         }
     }
 }
-**/
+
