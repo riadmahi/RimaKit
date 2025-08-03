@@ -1,4 +1,3 @@
-
 # RimaKit — Beautiful UI Components for Compose Multiplatform
 
 **RimaKit** is a sleek and minimal Kotlin Multiplatform UI library built with [JetBrains Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/).  
@@ -23,12 +22,11 @@ Make sure your project is set up for Compose Multiplatform (Android, iOS, Deskto
 > In the meantime, copy components directly into your shared `commonMain` module.
 
 
-## 📚 Components
+## Components
 
 ### RimaToggle
 
-A sleek, animated toggle switch with Compose beauty.  
-Customize colors, shapes, and transitions.
+A customizable animated toggle switch for Compose.
 
 ```kotlin
 RimaToggle(
@@ -37,76 +35,93 @@ RimaToggle(
 )
 ```
 
+Supports:
+- Sizes: `width`, `height`, `thumbSize`
+- Colors: `activeColor`, `inactiveColor`, `thumbColor`
+- Disabled state
 
 ### SwipeCard
 
-A card deck UI with smooth swipe gestures, perfect for Tinder-like interfaces.
+A swipeable stack of cards with autoplay and swipe detection.
 
 ```kotlin
 SwipeCard(
-    items = cardList,
-    onSwiped = { direction, index -> ... },
-    content = { cardData -> MinimalCard(cardData) }
+    images = imageList,
+    onSwipe = { direction, swipedUrl -> /* handle swipe */ }
 )
 ```
+
+Supports:
+- `cardSize`, `loop`, `autoplayDelayMillis`
 
 ### TinderSwipeCard
 
-An enhanced version of `SwipeCard`, including pre-built stack layout and direction tracking.
+An animated Tinder-style card swiper with autoplay support.
 
 ```kotlin
 TinderSwipeCard(
-    dataList = myCards,
-    onSwipeComplete = { direction, card -> ... }
+    images = imageList,
+    onSwipe = { direction, swipedUrl -> /* handle swipe */ }
 )
 ```
 
-### MinimalCard + MinimalCardData
+Same props as `SwipeCard`.
 
-A sample minimalistic card UI for quick integration and testing.
+### MinimalCard
+
+A simple card UI to display an image, title and description.
 
 ```kotlin
-MinimalCard(data = MinimalCardData(title = "Hello", subtitle = "World"))
+MinimalCard(
+    imageUrl = "https://your-image",
+    title = "Card Title",
+    description = "Card description"
+)
 ```
 
----
+Use `MinimalCardData.kt` to define your data class.
 
-### ExpandedTabs + TabItem + TabIcon
+### ExpandedTabs
 
-A beautiful, animated tab system with custom icons and labels.
+An animated horizontal tab bar using `TabItem` and `TabIcon`.
 
 ```kotlin
 ExpandedTabs(
-    items = listOf(
+    tabs = listOf(
         TabItem(icon = { TabIcon(icon = Icons.Default.Home) }, label = "Home"),
         TabItem(icon = { TabIcon(icon = Icons.Default.Settings) }, label = "Settings")
     ),
-    selectedIndex = selectedTab,
-    onSelectedIndexChange = { selectedTab = it }
+    selectedTabIndex = currentIndex,
+    onChange = { currentIndex = it }
 )
 ```
 
 ### RimaButton
 
-A minimal button with consistent styling and animations.
+A rounded button with optional border and loading indicator.
 
 ```kotlin
 RimaButton(
-    text = "Get Started",
-    onClick = { /* action */ }
+    text = "Start Now",
+    onClick = { /* handle action */ },
+    isLoading = false
 )
 ```
 
 ### AnimatedNumberRandom
 
-A fun animated number that updates randomly with smooth transitions.
+Displays an animated number with positive/negative coloring.
 
 ```kotlin
 AnimatedNumberRandom(
-    targetNumber = 42,
-    modifier = Modifier.padding(16.dp)
+    value = 128.4,
+    diff = -7.6
 )
 ```
+
+Props:
+- `currencySymbol`
+- `positiveColor`, `negativeColor`
 
 ## 🚧 Roadmap
 
